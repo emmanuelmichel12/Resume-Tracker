@@ -2,7 +2,7 @@ package com.jobtracker.auth_service.api.dto;
 
 import java.time.LocalDateTime;
 
-public class ResumeRegisterResponse {
+public class UserResponse {
 
     private long id;
     private String firstName;
@@ -10,10 +10,10 @@ public class ResumeRegisterResponse {
     private String username;
     private LocalDateTime createdAt;
 
-    public ResumeRegisterResponse() {
+    public UserResponse() {
     }
 
-    public ResumeRegisterResponse(long id, String firstName, String lastName, String username,
+    public UserResponse(long id, String firstName, String lastName, String username,
             LocalDateTime createdAt) {
         this.id = id;
         this.firstName = firstName;
