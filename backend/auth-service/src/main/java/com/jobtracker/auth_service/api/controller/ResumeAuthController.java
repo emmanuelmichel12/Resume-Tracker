@@ -26,6 +26,7 @@ public class ResumeAuthController {
         return authService.register(request);
     }
 
+    @PostMapping("/login")
     public ResumeLoginResponse login(@RequestBody ResumeLoginRequest request) {
         return authService.login(request);
     }

@@ -1,4 +1,4 @@
-package com.jobtracker.auth_service.config;
+package com.jobtracker.application_service.config;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -6,16 +6,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import com.jobtracker.auth_service.config.JwtUtilAuthFilter;
 
 @Configuration
 public class SecurityConfig {
 
-    private final JwtUtilAuthFilter jwtUtilAuthFilter;
+    private final JwtUtilFilter jwtUtilFilter;
 
-    public SecurityConfig(JwtUtilAuthFilter jwtUtilAuthFilter) {
-        this.jwtUtilAuthFilter = jwtUtilAuthFilter;
+    public SecurityConfig(JwtUtilFilter jwtUtilFilter) {
+        this.jwtUtilFilter = jwtUtilFilter;
     }
 
     @Bean
@@ -23,21 +21,16 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll());
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtUtilFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    public FilterRegistrationBean<JwtUtilAuthFilter> jwtFilterRegistration(JwtUtilAuthFilter filter) {
-        FilterRegistrationBean<JwtUtilAuthFilter> registration = new FilterRegistrationBean<>(filter);
+    public FilterRegistrationBean<JwtUtilFilter> jwtFilterRegistration(JwtUtilFilter filter) {
+        FilterRegistrationBean<JwtUtilFilter> registration = new FilterRegistrationBean<>(filter);
         registration.setEnabled(false);
         return registration;
     }
 }
-
-/*
- * .authorizeHttpRequests(auth -> auth
- * .requestMatchers("/api/auth/**").permitAll()
- * .anyRequest().authenticated())
- */
