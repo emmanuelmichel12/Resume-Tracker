@@ -4,6 +4,9 @@
 /Users/emmanuelmichel/Desktop/resumeTracker/backend/ai-service/src/main/java/com/jobtracker/ai_service/api/dto/AiResumeResponse.java
 /Users/emmanuelmichel/Desktop/resumeTracker/backend/ai-service/src/main/java/com/jobtracker/ai_service/api/dto/ResumeHistoryResponse.java
 /Users/emmanuelmichel/Desktop/resumeTracker/backend/ai-service/src/main/java/com/jobtracker/ai_service/api/dto/ResumeUploadResponse.java
+/Users/emmanuelmichel/Desktop/resumeTracker/backend/ai-service/src/main/java/com/jobtracker/ai_service/config/JwtUtil.java
+/Users/emmanuelmichel/Desktop/resumeTracker/backend/ai-service/src/main/java/com/jobtracker/ai_service/config/JwtUtilFilter.java
+/Users/emmanuelmichel/Desktop/resumeTracker/backend/ai-service/src/main/java/com/jobtracker/ai_service/config/SecurityConfig.java
 /Users/emmanuelmichel/Desktop/resumeTracker/backend/ai-service/src/main/java/com/jobtracker/ai_service/model/Resumes.java
 /Users/emmanuelmichel/Desktop/resumeTracker/backend/ai-service/src/main/java/com/jobtracker/ai_service/repository/ResumeRepository.java
 /Users/emmanuelmichel/Desktop/resumeTracker/backend/ai-service/src/main/java/com/jobtracker/ai_service/service/AiService.java
