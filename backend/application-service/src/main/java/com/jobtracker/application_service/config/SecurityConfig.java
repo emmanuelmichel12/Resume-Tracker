@@ -16,11 +16,26 @@ public class SecurityConfig {
         this.jwtUtilFilter = jwtUtilFilter;
     }
 
+    /*
+     * @Bean
+     * public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
+     * Exception {
+     * http
+     * .csrf(csrf -> csrf.disable())
+     * .authorizeHttpRequests(auth -> auth
+     * .anyRequest().authenticated())
+     * .addFilterBefore(jwtUtilFilter, UsernamePasswordAuthenticationFilter.class);
+     * 
+     * return http.build();
+     * }
+     */
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtUtilFilter, UsernamePasswordAuthenticationFilter.class);
 
