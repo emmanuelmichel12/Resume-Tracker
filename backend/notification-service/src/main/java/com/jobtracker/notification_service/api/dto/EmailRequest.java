@@ -9,8 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 public class EmailRequest {
 
-    private String email; // Remove
-
     private Long userId;
 
     private Long applicationId;

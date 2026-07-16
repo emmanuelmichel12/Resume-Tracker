@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.scheduling.annotation.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
+import com.jobtracker.notification_service.api.dto.UserResponse;
 import com.jobtracker.notification_service.model.Notifications;
 import com.jobtracker.notification_service.repository.NotificationRepository;
 
@@ -28,8 +30,13 @@ public class NoificationScheduler {
 
         for (Notifications notification : pending) {
             try {
-                // TODO: fetch recipient email from auth-service via API Gateway
-                String recipientEmail = ""; // will be populated after API Gateway setup
+
+                String recipientEmail = getUserEmail(notification.getUserId());
+
+                if (recipientEmail == null || recipientEmail.isEmpty()) {
+                    System.out.println("Failed to fetch email for userId " + notification.getUserId());
+                    continue;
+                }
 
                 emailService.sendEmail(
                         recipientEmail,
@@ -41,6 +48,23 @@ public class NoificationScheduler {
             } catch (Exception e) {
                 System.out.println("Failed to send notification " + notification.getId() + ": " + e.getMessage());
             }
+        }
+    }
+
+    private String getUserEmail(Long userId) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "https://alpgdhszzf.execute-api.us-east-2.amazonaws.com/auth/api/auth/users/" + userId;
+            UserResponse user = restTemplate.getForObject(url, UserResponse.class);
+
+            if (user != null) {
+                return user.getEmail();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to fetch user email for userId " + userId + ": " + e.getMessage());
+            return null;
         }
     }
 

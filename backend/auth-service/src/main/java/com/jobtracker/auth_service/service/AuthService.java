@@ -44,6 +44,7 @@ public class AuthService {
                 savedUser.getId(),
                 savedUser.getFirstName(),
                 savedUser.getLastName(),
+                savedUser.getUsername(),
                 savedUser.getEmail(),
                 savedUser.getCreatedAt());
     }
@@ -62,9 +63,23 @@ public class AuthService {
                 user.getId(),
                 user.getFirstName(),
                 user.getLastName(),
+                user.getUsername(),
                 user.getEmail(),
                 user.getCreatedAt());
 
         return new ResumeLoginResponse(token, userResponse);
+    }
+
+    public UserResponse getUserById(Long id) {
+        Users user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return new UserResponse(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getCreatedAt());
     }
 }

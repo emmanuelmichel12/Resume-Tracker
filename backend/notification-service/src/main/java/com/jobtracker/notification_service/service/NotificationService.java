@@ -3,9 +3,11 @@ package com.jobtracker.notification_service.service;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.jobtracker.notification_service.api.dto.EmailRequest;
 import com.jobtracker.notification_service.api.dto.EmailResponse;
+import com.jobtracker.notification_service.api.dto.UserResponse;
 import com.jobtracker.notification_service.model.Notifications;
 import com.jobtracker.notification_service.repository.NotificationRepository;
 
@@ -35,7 +37,17 @@ public class NotificationService {
         newNotification.setMessage(request.getMessage());
         newNotification.setScheduledFor(request.getScheduledFor());
 
-        String to = request.getEmail();
+        RestTemplate restTemplate = new RestTemplate();
+        String userUrl = "https://alpgdhszzf.execute-api.us-east-2.amazonaws.com/auth/api/auth/users/"
+                + request.getUserId();
+        UserResponse user = restTemplate.getForObject(userUrl, UserResponse.class);
+
+        String to = user != null ? user.getEmail() : null;
+
+        if (to == null || to.isEmpty()) {
+            throw new RuntimeException("User not found or email is null for userId: " + request.getUserId());
+        }
+
         String subject = request.getNotificationType();
         String message = request.getMessage();
         String body;
