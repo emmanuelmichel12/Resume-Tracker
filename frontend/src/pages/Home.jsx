@@ -5,10 +5,13 @@ function Home() {
 
   return (
     <div className= "flex h-screen bg-gradient-to-br from-[#F6E*CC] to-[#E6D789]">
+
       <div className="w-15/16 aspect-video">
         <img src="/pic.jpeg" alt="Job Application Tracker" className="w-full h-full object-cover" />
       </div>
+       
       <div className="flex flex-col justify-between items-center w-1/3 pb-12 pt-12">
+
       <div>
 <h1 className="mb-4 font-[Manrope] font-extrabold tracking-tight text-5xl flex flex-col justify-center items-center">
   <span className="text-amber-500 mb-2">Every application.</span>
@@ -18,8 +21,8 @@ function Home() {
       </div>
 
       <div className="flex flex-col gap-4 w-full px-8">
-      <button className = "bg-amber-500 px-9 py-3 rounded-lg font-semibold hover:bg-amber-600"onClick={() => navigate('/login')}>Login</button>
-      <button className = "bg-amber-500 px-9 py-3 rounded-lg font-semibold hover:bg-amber-600" onClick={() => navigate('/register')}>Sign Up!</button>
+      <button className = "bg-amber-500 px-9 py-3 rounded-lg font-semibold hover:bg-sky-300"onClick={() => navigate('/login')}>Login</button>
+      <button className = "bg-amber-500 px-9 py-3 rounded-lg font-semibold hover:bg-sky-300" onClick={() => navigate('/register')}>Sign Up!</button>
       </div>
 
       </div>
