@@ -16,6 +16,10 @@ function Login() {
         password: password
       }
       const response = await axios.post(`${API_URL}/auth/api/auth/login`, data)
+      localStorage.setItem('token', response.data.token)
+      localStorage.setItem('firstName', response.data.firstName)
+      localStorage.setItem('userId', response.data.user.id)
+      navigate('/dashboard')
       console.log(response.data)
     } catch (error) {
       console.error('Error logging in user:', error)
