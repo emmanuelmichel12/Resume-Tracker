@@ -8,6 +8,12 @@ function Applications() {
   const [showModal, setShowModal] = useState(false)
   const [editingApp, setEditingApp] = useState(null)
 
+const [resumeFile, setResumeFile] = useState(null)
+const [uploadSuccess, setUploadSuccess] = useState(false)
+const [selectedAppId, setSelectedAppId] = useState('')
+const [jobDescription, setJobDescription] = useState('')
+const [aiOutput, setAiOutput] = useState('')
+
   const API_URL = import.meta.env.VITE_API_URL
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('userId')
@@ -48,6 +54,33 @@ function Applications() {
     }
     setShowModal(false)
     fetchApplications()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const handleUpload = async () => {
+  try {
+    const formData = new FormData()
+    formData.append('file', resumeFile)
+    formData.append('userId', userId)
+    await axios.post(`${API_URL}/ai/resume/upload`, formData, {
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+    })
+    setUploadSuccess(true)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const handleTailor = async () => {
+  try {
+    const response = await axios.post(`${API_URL}/ai/resume/ai-tailoring`, {
+      id: userId,
+      applicationId: selectedAppId,
+      jobDescription: jobDescription
+    }, config)
+    setAiOutput(response.data.aiOutput)
   } catch (error) {
     console.error(error)
   }
@@ -181,7 +214,61 @@ function Applications() {
 )}
   </div>
 )}
-        {activeTab === 'ai' && <div>AI Resume content</div>}
+    {activeTab === 'ai' && (
+  <div className="flex flex-col gap-6">
+
+    {/* Upload Resume */}
+    <div className="bg-white rounded-xl p-6">
+      <h2 className="font-[Manrope] font-extrabold text-xl text-amber-500 mb-4">Upload Resume</h2>
+      <div className="flex gap-4 items-center">
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={e => setResumeFile(e.target.files[0])}
+          className="border-2 border-amber-500 px-4 py-2 rounded-lg w-full"
+        />
+        <button
+          onClick={handleUpload}
+          className="bg-amber-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-amber-600 whitespace-nowrap">
+          Upload
+        </button>
+      </div>
+      {uploadSuccess && <p className="text-sky-300 mt-2">Resume uploaded successfully!</p>}
+    </div>
+
+    {/* AI Tailoring */}
+    <div className="bg-white rounded-xl p-6">
+      <h2 className="font-[Manrope] font-extrabold text-xl text-amber-500 mb-4">AI Resume Tailoring</h2>
+      <div className="flex flex-col gap-4">
+        <select
+          onChange={e => setSelectedAppId(e.target.value)}
+          className="border-2 border-amber-500 px-4 py-2 rounded-lg w-full">
+          <option value="">Select Application</option>
+          {applications.map(app => (
+            <option key={app.id} value={app.id}>{app.jobName} — {app.jobRole}</option>
+          ))}
+        </select>
+        <textarea
+          placeholder="Paste the job description here..."
+          onChange={e => setJobDescription(e.target.value)}
+          className="border-2 border-amber-500 px-4 py-2 rounded-lg w-full h-32"
+        />
+        <button
+          onClick={handleTailor}
+          className="bg-amber-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-amber-600">
+          Generate Bullet Points
+        </button>
+      </div>
+      {aiOutput && (
+        <div className="mt-6">
+          <h3 className="font-[Manrope] font-extrabold text-amber-500 mb-2">AI Output</h3>
+          <p className="text-sky-300 whitespace-pre-line">{aiOutput}</p>
+        </div>
+      )}
+    </div>
+
+  </div>
+)}
         {activeTab === 'reminders' && <div>Reminders content</div>}
       </div>
 
