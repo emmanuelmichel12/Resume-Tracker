@@ -8,11 +8,18 @@ function Applications() {
   const [showModal, setShowModal] = useState(false)
   const [editingApp, setEditingApp] = useState(null)
 
-const [resumeFile, setResumeFile] = useState(null)
-const [uploadSuccess, setUploadSuccess] = useState(false)
-const [selectedAppId, setSelectedAppId] = useState('')
-const [jobDescription, setJobDescription] = useState('')
-const [aiOutput, setAiOutput] = useState('')
+  const [resumeFile, setResumeFile] = useState(null)
+  const [uploadSuccess, setUploadSuccess] = useState(false)
+  const [selectedAppId, setSelectedAppId] = useState('')
+  const [jobDescription, setJobDescription] = useState('')
+  const [aiOutput, setAiOutput] = useState('')
+
+  const [reminderAppId, setReminderAppId] = useState('')
+  const [notificationType, setNotificationType] = useState('')
+  const [reminderMessage, setReminderMessage] = useState('')
+  const [scheduledFor, setScheduledFor] = useState('')
+  const [reminderSuccess, setReminderSuccess] = useState(false)
+
 
   const API_URL = import.meta.env.VITE_API_URL
   const token = localStorage.getItem('token')
@@ -81,6 +88,22 @@ const handleTailor = async () => {
       jobDescription: jobDescription
     }, config)
     setAiOutput(response.data.aiOutput)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const handleSendReminder = async () => {
+  try {
+    await axios.post(`${API_URL}/notification/notifications/send`, {
+      userId: userId,
+      applicationId: reminderAppId,
+      notificationType: notificationType,
+      message: reminderMessage,
+      scheduledFor: scheduledFor
+    }, config)
+    setReminderSuccess(true)
+    setTimeout(() => setReminderSuccess(false), 4000)
   } catch (error) {
     console.error(error)
   }
@@ -269,11 +292,64 @@ const handleTailor = async () => {
 
   </div>
 )}
-        {activeTab === 'reminders' && <div>Reminders content</div>}
+        {activeTab === 'reminders' && (
+  <div className="bg-white rounded-xl p-6">
+    <h2 className="font-[Manrope] font-extrabold text-xl text-amber-500 mb-6">Send a Reminder</h2>
+    <div className="flex flex-col gap-4">
+
+      <select
+        value={reminderAppId}
+        onChange={e => setReminderAppId(e.target.value)}
+        className="border-2 border-amber-500 px-4 py-2 rounded-lg w-full">
+        <option value="">Select Application</option>
+        {applications.map(app => (
+          <option key={app.id} value={app.id}>{app.jobName} — {app.jobRole}</option>
+        ))}
+      </select>
+
+      <select
+        value={notificationType}
+        onChange={e => setNotificationType(e.target.value)}
+        className="border-2 border-amber-500 px-4 py-2 rounded-lg w-full">
+        <option value="">Select Reminder Type</option>
+        <option value="FOLLOW_UP">Follow Up</option>
+        <option value="INTERVIEW">Interview</option>
+        <option value="DEADLINE">Deadline</option>
+      </select>
+
+      <textarea
+        placeholder="Message..."
+        value={reminderMessage}
+        onChange={e => setReminderMessage(e.target.value)}
+        className="border-2 border-amber-500 px-4 py-2 rounded-lg w-full h-28"
+      />
+
+      <div className="flex flex-col gap-1">
+        <label className="text-amber-500 font-semibold text-sm">Scheduled For</label>
+        <input
+          type="datetime-local"
+          value={scheduledFor}
+          onChange={e => setScheduledFor(e.target.value)}
+          className="border-2 border-amber-500 px-4 py-2 rounded-lg w-full"
+        />
       </div>
 
+      <button
+        onClick={handleSendReminder}
+        className="bg-amber-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-amber-600">
+        Send Reminder
+      </button>
+
+      {reminderSuccess && (
+        <p className="text-sky-300 font-semibold">Reminder sent to your email!</p>
+      )}
+    </div>
+  </div>
+)}
+      </div>
     </div>
   )
 }
+
 
 export default Applications
