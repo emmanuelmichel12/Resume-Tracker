@@ -4,7 +4,6 @@ import java.util.stream.Collectors;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
@@ -15,31 +14,20 @@ import com.jobtracker.ai_service.api.dto.ResumeUploadResponse;
 import com.jobtracker.ai_service.model.Resumes;
 import com.jobtracker.ai_service.repository.ResumeRepository;
 
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.core.sync.RequestBody;
-
 @Service
 public class ResumeService {
 
-        @Value("${aws.s3.bucket}")
-        private String bucketName;
-
-        private final S3Client s3Client;
         private final AiService aiService;
         private final ResumeRepository resumesRepository;
 
-        public ResumeService(AiService aiService, ResumeRepository resumesRepository, S3Client s3Client) {
+        public ResumeService(AiService aiService, ResumeRepository resumesRepository) {
                 this.aiService = aiService;
                 this.resumesRepository = resumesRepository;
-                this.s3Client = s3Client;
         }
 
         public List<ResumeHistoryResponse> getResumeHistory(Long userId) {
-                // Fetch all resumes for the user from the database
                 List<Resumes> resumes = resumesRepository.findByUserId(userId);
 
-                // Map to DTOs
                 return resumes.stream()
                                 .map(resume -> new ResumeHistoryResponse(
                                                 resume.getId(),
