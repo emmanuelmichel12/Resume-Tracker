@@ -2,6 +2,7 @@ package com.jobtracker.notification_service.service;
 
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,6 +20,8 @@ public class NotificationService {
     // Updating wasSent & sentAt
     // G etting notification history by userId
 
+    @Value("${auth.service.url}")
+    private String authServiceUrl;
     private final EmailService emailService;
     private final NotificationRepository notificationRepository;
 
@@ -38,8 +41,7 @@ public class NotificationService {
         newNotification.setScheduledFor(request.getScheduledFor());
 
         RestTemplate restTemplate = new RestTemplate();
-        String userUrl = "https://alpgdhszzf.execute-api.us-east-2.amazonaws.com/auth/api/auth/users/"
-                + request.getUserId();
+        String userUrl = authServiceUrl + "/api/auth/users/" + request.getUserId();
         UserResponse user = restTemplate.getForObject(userUrl, UserResponse.class);
 
         String to = user != null ? user.getEmail() : null;

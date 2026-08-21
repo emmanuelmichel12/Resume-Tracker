@@ -3,6 +3,7 @@ package com.jobtracker.notification_service.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +15,9 @@ import com.jobtracker.notification_service.repository.NotificationRepository;
 @Component
 @EnableScheduling
 public class NoificationScheduler {
+
+    @Value("${auth.service.url}")
+    private String authServiceUrl;
 
     private final NotificationRepository notificationRepository;
     private final EmailService emailService;
@@ -54,7 +58,7 @@ public class NoificationScheduler {
     private String getUserEmail(Long userId) {
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String url = "https://alpgdhszzf.execute-api.us-east-2.amazonaws.com/auth/api/auth/users/" + userId;
+            String url = authServiceUrl + "/api/auth/users/" + userId;
             UserResponse user = restTemplate.getForObject(url, UserResponse.class);
 
             if (user != null) {
