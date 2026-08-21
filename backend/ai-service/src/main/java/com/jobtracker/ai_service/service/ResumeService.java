@@ -22,91 +22,79 @@ import software.amazon.awssdk.core.sync.RequestBody;
 @Service
 public class ResumeService {
 
-    @Value("${aws.s3.bucket}")
-    private String bucketName;
+        @Value("${aws.s3.bucket}")
+        private String bucketName;
 
-    private final S3Client s3Client;
-    private final AiService aiService;
-    private final ResumeRepository resumesRepository;
+        private final S3Client s3Client;
+        private final AiService aiService;
+        private final ResumeRepository resumesRepository;
 
-    public ResumeService(AiService aiService, ResumeRepository resumesRepository, S3Client s3Client) {
-        this.aiService = aiService;
-        this.resumesRepository = resumesRepository;
-        this.s3Client = s3Client;
-    }
+        public ResumeService(AiService aiService, ResumeRepository resumesRepository, S3Client s3Client) {
+                this.aiService = aiService;
+                this.resumesRepository = resumesRepository;
+                this.s3Client = s3Client;
+        }
 
-    public List<ResumeHistoryResponse> getResumeHistory(Long userId) {
-        // Fetch all resumes for the user from the database
-        List<Resumes> resumes = resumesRepository.findByUserId(userId);
+        public List<ResumeHistoryResponse> getResumeHistory(Long userId) {
+                // Fetch all resumes for the user from the database
+                List<Resumes> resumes = resumesRepository.findByUserId(userId);
 
-        // Map to DTOs
-        return resumes.stream()
-                .map(resume -> new ResumeHistoryResponse(
-                        resume.getId(),
-                        resume.getApplicationId(),
-                        resume.getJobDescription(),
-                        resume.getAiOutput(),
-                        resume.getCreatedAt()))
-                .collect(Collectors.toList());
-    }
+                // Map to DTOs
+                return resumes.stream()
+                                .map(resume -> new ResumeHistoryResponse(
+                                                resume.getId(),
+                                                resume.getApplicationId(),
+                                                resume.getJobDescription(),
+                                                resume.getAiOutput(),
+                                                resume.getCreatedAt()))
+                                .collect(Collectors.toList());
+        }
 
-    public ResumeUploadResponse uploadResume(MultipartFile file, Long userId) throws Exception {
+        public ResumeUploadResponse uploadResume(MultipartFile file, Long userId) throws Exception {
 
-        PDDocument document = PDDocument.load(file.getInputStream());
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-        String pdfText = pdfStripper.getText(document);
-        document.close();
+                PDDocument document = PDDocument.load(file.getInputStream());
+                PDFTextStripper pdfStripper = new PDFTextStripper();
+                String pdfText = pdfStripper.getText(document);
+                document.close();
 
-        String fileName = "resumes/" + userId + "/" + System.currentTimeMillis() + ".pdf";
+                Resumes resume = new Resumes();
+                resume.setUserId(userId);
+                resume.setS3Url(null);
+                resume.setResumeText(pdfText);
 
-        s3Client.putObject(
-                PutObjectRequest.builder()
-                        .bucket(bucketName)
-                        .key(fileName)
-                        .contentType("application/pdf")
-                        .build(),
-                RequestBody.fromBytes(file.getBytes()));
+                Resumes savedResume = resumesRepository.save(resume);
+                return new ResumeUploadResponse(
+                                savedResume.getId(),
+                                savedResume.getUserId(),
+                                savedResume.getS3Url(),
+                                savedResume.getCreatedAt());
+        }
 
-        String s3Url = "https://" + bucketName + ".s3.us-east-2.amazonaws.com/" + fileName;
+        public AiResumeResponse tailorResume(AiResumeRequest request) throws Exception {
 
-        Resumes resume = new Resumes();
-        resume.setUserId(userId);
-        resume.setS3Url(s3Url);
-        resume.setResumeText(pdfText);
+                Resumes resume = resumesRepository.findById(request.getId())
+                                .orElseThrow(() -> new RuntimeException("Resume not found"));
 
-        Resumes savedResume = resumesRepository.save(resume);
-        return new ResumeUploadResponse(
-                savedResume.getId(),
-                savedResume.getUserId(),
-                savedResume.getS3Url(),
-                savedResume.getCreatedAt());
-    }
+                String resumeText = resume.getResumeText();
+                String jobDescription = request.getJobDescription();
 
-    public AiResumeResponse tailorResume(AiResumeRequest request) throws Exception {
+                String aiOutput = aiService.generateOutput(resumeText, jobDescription);
 
-        Resumes resume = resumesRepository.findById(request.getId())
-                .orElseThrow(() -> new RuntimeException("Resume not found"));
+                Resumes updatedResume = resume;
+                updatedResume.setJobDescription(jobDescription);
+                updatedResume.setAiOutput(aiOutput);
 
-        String resumeText = resume.getResumeText();
-        String jobDescription = request.getJobDescription();
+                Resumes savedResume = resumesRepository.save(updatedResume);
 
-        String aiOutput = aiService.generateOutput(resumeText, jobDescription);
-
-        Resumes updatedResume = resume;
-        updatedResume.setJobDescription(jobDescription);
-        updatedResume.setAiOutput(aiOutput);
-
-        Resumes savedResume = resumesRepository.save(updatedResume);
-
-        return new AiResumeResponse(
-                savedResume.getId(),
-                savedResume.getUserId(),
-                savedResume.getApplicationId(),
-                savedResume.getS3Url(),
-                savedResume.getResumeText(),
-                savedResume.getJobDescription(),
-                savedResume.getAiOutput(),
-                savedResume.getCreatedAt());
-    }
+                return new AiResumeResponse(
+                                savedResume.getId(),
+                                savedResume.getUserId(),
+                                savedResume.getApplicationId(),
+                                savedResume.getS3Url(),
+                                savedResume.getResumeText(),
+                                savedResume.getJobDescription(),
+                                savedResume.getAiOutput(),
+                                savedResume.getCreatedAt());
+        }
 
 }
