@@ -7,13 +7,13 @@ function Dashboard() {
   const firstName = localStorage.getItem('firstName')
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('userId')
-  const API_URL = import.meta.env.VITE_API_URL
+  const APPLICATION_URL = import.meta.env.VITE_APPLICATION_URL
   const [applications, setApplications] = useState([])
   
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const response = await axios.get(`${API_URL}/applications/applications/${userId}`, {
+        const response = await axios.get(`${APPLICATION_URL}/applications/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         setApplications(response.data)

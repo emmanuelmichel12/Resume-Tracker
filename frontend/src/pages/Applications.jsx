@@ -20,8 +20,9 @@ function Applications() {
   const [scheduledFor, setScheduledFor] = useState('')
   const [reminderSuccess, setReminderSuccess] = useState(false)
 
-
-  const API_URL = import.meta.env.VITE_API_URL
+  const APPLICATION_URL = import.meta.env.VITE_APPLICATION_URL
+  const AI_URL = import.meta.env.VITE_AI_URL
+  const NOTIFICATION_URL = import.meta.env.VITE_NOTIFICATION_URL
   const token = localStorage.getItem('token')
   const userId = localStorage.getItem('userId')
 
@@ -33,7 +34,7 @@ function Applications() {
 
   const fetchApplications = async () => {
     try {
-      const response = await axios.get(`${API_URL}/applications/applications/${userId}`, config)
+      const response = await axios.get(`${APPLICATION_URL}/applications/${userId}`, config)
       setApplications(response.data)
     } catch (error) {
       console.error(error)
@@ -42,7 +43,7 @@ function Applications() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_URL}/applications/applications/delete/${id}`, config)
+      await axios.delete(`${APPLICATION_URL}/applications/delete/${id}`, config)
       fetchApplications()
     } catch (error) {
       console.error(error)
@@ -52,9 +53,9 @@ function Applications() {
   const handleSave = async () => {
   try {
     if (editingApp?.id) {
-      await axios.put(`${API_URL}/applications/applications/update/${editingApp.id}`, editingApp, config)
+      await axios.put(`${APPLICATION_URL}/applications/update/${editingApp.id}`, editingApp, config)
     } else {
-      await axios.post(`${API_URL}/applications/applications/create`, {
+      await axios.post(`${APPLICATION_URL}/applications/create`, {
         ...editingApp,
         userId: userId
       }, config)
@@ -71,7 +72,7 @@ const handleUpload = async () => {
     const formData = new FormData()
     formData.append('file', resumeFile)
     formData.append('userId', userId)
-    await axios.post(`${API_URL}/ai/resume/upload`, formData, {
+    await axios.post(`${AI_URL}/resume/upload`, formData, {
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
     })
     setUploadSuccess(true)
@@ -82,7 +83,7 @@ const handleUpload = async () => {
 
 const handleTailor = async () => {
   try {
-    const response = await axios.post(`${API_URL}/ai/resume/ai-tailoring`, {
+    const response = await axios.post(`${AI_URL}/resume/ai-tailoring`, {
       id: userId,
       applicationId: selectedAppId,
       jobDescription: jobDescription
@@ -95,7 +96,7 @@ const handleTailor = async () => {
 
 const handleSendReminder = async () => {
   try {
-    await axios.post(`${API_URL}/notification/notifications/send`, {
+    await axios.post(`${NOTIFICATION_URL}/notifications/send`, {
       userId: userId,
       applicationId: reminderAppId,
       notificationType: notificationType,

@@ -6,7 +6,7 @@ function Login() {
 
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const API_URL = import.meta.env.VITE_API_URL
+  const AUTH_URL = import.meta.env.VITE_AUTH_URL
   const navigate = useNavigate()
 
   const handleLogin = async () => {
@@ -15,7 +15,7 @@ function Login() {
         username: username,
         password: password
       }
-      const response = await axios.post(`${API_URL}/auth/api/auth/login`, data)
+      const response = await axios.post(`${AUTH_URL}/api/auth/login`, data)
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('firstName', response.data.firstName)
       localStorage.setItem('userId', response.data.user.id)

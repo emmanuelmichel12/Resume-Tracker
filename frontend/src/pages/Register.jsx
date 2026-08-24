@@ -11,6 +11,7 @@ const [password, setPassword] = useState('');
 const [username, setUsername] = useState('');
 const [showPopup, setShowPopup] = useState(false);
 const API_URL = import.meta.env.VITE_API_URL
+const AUTH_URL = import.meta.env.VITE_AUTH_URL
 const navigate = useNavigate()
 
 const handleRegister = async () => {
@@ -22,7 +23,7 @@ const handleRegister = async () => {
             username: username,
             password: password
         }
-        const response = await axios.post(`${API_URL}/auth/api/auth/register`, data)
+        const response = await axios.post(`${AUTH_URL}/api/auth/register`, data)
         setShowPopup(true);
         setTimeout(() => {
             navigate('/login');
