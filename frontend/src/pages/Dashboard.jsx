@@ -25,10 +25,10 @@ function Dashboard() {
   }, [])
 
   const numApplied = applications.length
-  const numInterviews = applications.filter(app => app.status === 'interview').length
-  const numOffers = applications.filter(app => app.status === 'offer').length
-  const numDenied = applications.filter(app => app.status === 'denied').length
-  const numWaitingResponse = applications.filter(app => app.status === 'waiting response').length
+  const numInterviews = applications.filter(app => app.status === 'Interview').length
+  const numOffers = applications.filter(app => app.status === 'Offer').length
+  const numDenied = applications.filter(app => app.status === 'Denied').length
+  const numWaitingResponse = applications.filter(app => app.status === 'Waiting Response').length
 
 
 
