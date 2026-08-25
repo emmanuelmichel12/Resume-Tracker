@@ -1,32 +1,30 @@
 package com.jobtracker.notification_service.service;
 
-import org.springframework.mail.SimpleMailMessage;
-
-//import java.util.Properties;
-
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.javamail.JavaMailSender;
-//import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class EmailService {
-    // JavaMailSender Logic
 
-    private JavaMailSender mailSender;
-
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
+    @Value("${RESEND_API_KEY}")
+    private String apiKey;
 
     public void sendEmail(String to, String subject, String body) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setFrom("onboarding@resend.dev");
-        message.setSubject(subject);
-        message.setText(body);
-        mailSender.send(message);
+        RestClient client = RestClient.create();
+
+        client.post()
+                .uri("https://api.resend.com/emails")
+                .header("Authorization", "Bearer " + apiKey)
+                .header("Content-Type", "application/json")
+                .body(Map.of(
+                        "from", "onboarding@resend.dev",
+                        "to", new String[] { to },
+                        "subject", subject,
+                        "text", body))
+                .retrieve()
+                .toBodilessEntity();
     }
 }
