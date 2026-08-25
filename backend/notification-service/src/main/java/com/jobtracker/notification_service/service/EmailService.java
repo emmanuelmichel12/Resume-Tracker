@@ -1,34 +1,28 @@
 package com.jobtracker.notification_service.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 import org.springframework.beans.factory.annotation.Value;
+
+import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
 
 @Service
 public class EmailService {
 
-    @Value("${RESEND_API_KEY}")
+    @Value("")
     private String apiKey;
 
-    public void sendEmail(String to, String subject, String body) {
+    public void sendEmail(String to, String subject, String body) throws ResendException {
+        Resend resend = new Resend(apiKey);
 
-        RestClient client = RestClient.create();
+        CreateEmailOptions request = CreateEmailOptions.builder()
+                .from("onboarding@resend.dev")
+                .to(to)
+                .subject(subject)
+                .html("<p>" + body + "</p>")
+                .build();
 
-        String json = """
-                {
-                    "from": "onboarding@resend.dev",
-                    "to": ["%s"],
-                    "subject": "%s",
-                    "html": "<p>%s</p>"
-                }
-                """.formatted(to, subject, body);
-
-        client.post()
-                .uri("https://api.resend.com/emails")
-                .header("Authorization", "Bearer " + apiKey)
-                .header("Content-Type", "application/json")
-                .body(json)
-                .retrieve()
-                .toBodilessEntity();
+        resend.emails().send(request);
     }
 }
