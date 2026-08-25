@@ -11,6 +11,7 @@ import com.jobtracker.notification_service.api.dto.EmailResponse;
 import com.jobtracker.notification_service.api.dto.UserResponse;
 import com.jobtracker.notification_service.model.Notifications;
 import com.jobtracker.notification_service.repository.NotificationRepository;
+import com.resend.core.exception.ResendException;
 
 @Service
 public class NotificationService {
@@ -31,7 +32,7 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    public EmailResponse sendNotification(EmailRequest request) {
+    public EmailResponse sendNotification(EmailRequest request) throws ResendException {
 
         Notifications newNotification = new Notifications();
         newNotification.setUserId(request.getUserId());
