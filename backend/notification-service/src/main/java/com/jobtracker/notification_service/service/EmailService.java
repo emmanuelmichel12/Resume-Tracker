@@ -10,7 +10,7 @@ import com.resend.services.emails.model.CreateEmailOptions;
 @Service
 public class EmailService {
 
-    @Value("")
+    @Value("${RESEND_API_KEY}")
     private String apiKey;
 
     public void sendEmail(String to, String subject, String body) throws ResendException {
