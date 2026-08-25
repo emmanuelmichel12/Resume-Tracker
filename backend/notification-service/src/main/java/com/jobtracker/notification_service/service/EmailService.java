@@ -2,7 +2,6 @@ package com.jobtracker.notification_service.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 
 @Service
@@ -15,15 +14,20 @@ public class EmailService {
 
         RestClient client = RestClient.create();
 
+        String json = """
+                {
+                    "from": "onboarding@resend.dev",
+                    "to": ["%s"],
+                    "subject": "%s",
+                    "text": "%s"
+                }
+                """.formatted(to, subject, body);
+
         client.post()
                 .uri("https://api.resend.com/emails")
                 .header("Authorization", "Bearer " + apiKey)
                 .header("Content-Type", "application/json")
-                .body(Map.of(
-                        "from", "onboarding@resend.dev",
-                        "to", new String[] { to },
-                        "subject", subject,
-                        "text", body))
+                .body(json)
                 .retrieve()
                 .toBodilessEntity();
     }
