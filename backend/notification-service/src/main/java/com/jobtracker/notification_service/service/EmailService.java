@@ -19,7 +19,7 @@ public class EmailService {
                     "from": "onboarding@resend.dev",
                     "to": ["%s"],
                     "subject": "%s",
-                    "text": "%s"
+                    "html": "<p>%s</p>"
                 }
                 """.formatted(to, subject, body);
 
