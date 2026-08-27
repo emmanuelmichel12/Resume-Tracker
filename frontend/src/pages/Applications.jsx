@@ -101,7 +101,7 @@ const handleSendReminder = async () => {
       applicationId: reminderAppId,
       notificationType: notificationType,
       message: reminderMessage,
-      scheduledFor: scheduledFor
+      scheduledFor: scheduledFor ? new Date(scheduledFor).toISOString().slice(0, 19) : null
     }, config)
     setReminderSuccess(true)
     setTimeout(() => setReminderSuccess(false), 4000)

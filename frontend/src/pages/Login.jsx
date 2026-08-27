@@ -21,6 +21,8 @@ function Login() {
       localStorage.setItem('userId', response.data.user.id)
       navigate('/dashboard')
       console.log(response.data)
+      const decoded = JSON.parse(atob(response.data.token.split('.')[1]));
+      console.log(decoded);
     } catch (error) {
       console.error('Error logging in user:', error)
       }
