@@ -22,7 +22,7 @@ function Login() {
       navigate('/dashboard')
       console.log(response.data)
       const decoded = JSON.parse(atob(response.data.token.split('.')[1]));
-      console.log(decoded);
+      localStorage.setItem('firstName', decoded.firstName);
     } catch (error) {
       console.error('Error logging in user:', error)
       }

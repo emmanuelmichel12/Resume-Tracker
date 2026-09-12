@@ -24,11 +24,13 @@ function Dashboard() {
     fetchApplications()
   }, [])
 
+  console.log(applications.map(app => app.jobStatus))
+  console.log(applications[0])
   const numApplied = applications.length
-  const numInterviews = applications.filter(app => app.status === 'Interview').length
-  const numOffers = applications.filter(app => app.status === 'Offer').length
-  const numDenied = applications.filter(app => app.status === 'Denied').length
-  const numWaitingResponse = applications.filter(app => app.status === 'Waiting Response').length
+  const numInterviews = applications.filter(app => app.jobStatus === 'Interview').length
+  const numOffers = applications.filter(app => app.jobStatus === 'Offer').length
+  const numDenied = applications.filter(app => app.jobStatus === 'Denied').length
+  const numWaitingResponse = applications.filter(app => app.jobStatus === 'Waiting Response').length
 
 
 
@@ -46,7 +48,7 @@ function Dashboard() {
 
         {/* Applied - full width */}
         <div className="bg-white rounded-xl p-6 flex flex-col items-center w-full">
-          <p className="text-amber-500 font-semibold">Applied</p>
+          <p className="text-amber-500 font-semibold">Total Applications</p>
           <p className="text-4xl font-extrabold text-sky-300">{numApplied}</p>
         </div>
 
@@ -70,13 +72,6 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Upcoming Reminders */}
-        <div className="bg-white rounded-xl p-6">
-          <h2 className="font-[Manrope] font-extrabold text-xl text-amber-500 mb-4">Upcoming Reminders</h2>
-          <ul className="flex flex-col gap-2 text-sky-300">
-            <li>No upcoming reminders</li>
-          </ul>
-        </div>
 
       </div>
     </div>
